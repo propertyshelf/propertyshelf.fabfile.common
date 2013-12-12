@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Manage MLS frontend components like web server, load balancer and cache."""
+"""Manage frontend components like web server, load balancer and cache."""
 
 from fabric import api
 
