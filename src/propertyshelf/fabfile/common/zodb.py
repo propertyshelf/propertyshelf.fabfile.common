@@ -44,6 +44,7 @@ def download_zodb(config):
         # Downlaod Data.fs from server.
         with api.cd(folder):
             api.sudo('rsync -a var/filestorage/Data.fs /tmp/Data.fs')
+            api.sudo('chmod 0644 /tmp/Data.fs')
             api.get('/tmp/Data.fs', 'var/filestorage/Data.fs')
 
 
