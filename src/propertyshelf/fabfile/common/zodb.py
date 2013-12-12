@@ -5,13 +5,7 @@ import os
 from fabric import api
 from fabric.contrib.console import confirm
 from fabric.contrib.files import exists
-from propertyshelf.fabfile.common import utils
 from propertyshelf.fabfile.common.exceptions import err
-
-
-def restart(service='zeoserver'):
-    """Restart the database component."""
-    utils.supervisorctl(command='restart', service=service)
 
 
 def download_data(config):
@@ -88,11 +82,11 @@ def download_blobs(config):
 
 def upload_data(config):
     """Upload the database files to the server."""
-    upload_zodb(config, start_when_done=False)
+    upload_zodb(config)
     upload_blob(config)
 
 
-def upload_zodb(config, start_when_done=True):
+def upload_zodb(config):
     """Upload ZODB part of Zope's data to the server."""
     folder = config.get('zeo', {}).get('dir') or err('Folder must be set!')
     user = config.get('user') or err('Application user must be set!')
@@ -106,7 +100,6 @@ def upload_zodb(config, start_when_done=True):
     api.put('var/filestorage/Data.fs', '/tmp/upload/Data.fs', use_sudo=True)
     api.sudo('chown %s /tmp/upload/Data.fs' % user)
 
-    utils.supervisorctl(command='stop', service='zeoserver')
     with api.settings(sudo_user=user):
         with api.cd(folder):
             # Backup current Data.fs.
@@ -116,11 +109,8 @@ def upload_zodb(config, start_when_done=True):
                 ))
             api.sudo('mv /tmp/upload/Data.fs var/filestorage/Data.fs')
 
-    if start_when_done:
-        utils.supervisorctl(command='start', service='zeoserver')
 
-
-def upload_blob(config, start_when_done=True):
+def upload_blob(config):
     """Upload blob part of Zope's data to the server."""
     folder = config.get('zeo', {}).get('dir') or err('Folder must be set!')
     user = config.get('user') or err('Application user must be set!')
@@ -140,16 +130,12 @@ def upload_blob(config, start_when_done=True):
     with api.cd('/tmp/upload'):
         api.sudo('tar xzf blobstorage.tgz', user=user)
 
-    utils.supervisorctl(command='stop', service='zeoserver')
     with api.settings(sudo_user=user):
         with api.cd(folder):
             # Backup current blob files.
             if exists('var/blobstorage', use_sudo=True):
                 api.sudo('mv var/blobstorage var/blobstorage_bak')
             api.sudo('mv /tmp/upload/blobstorage var')
-
-    if start_when_done:
-        utils.supervisorctl(command='start', service='zeoserver')
 
 
 def backup():
