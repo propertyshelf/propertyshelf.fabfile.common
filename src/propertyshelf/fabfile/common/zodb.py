@@ -109,7 +109,7 @@ def upload_zodb(config, start_when_done=True):
     with api.settings(sudo_user=user):
         with api.cd(folder):
             # Backup current Data.fs.
-            if exists('var/filestorage/Data.fs'):
+            if exists('var/filestorage/Data.fs', use_sudo=True):
                 api.sudo('mv %(fsdir)s/Data.fs %(fsdir)s/Data.fs.bak' % dict(
                     fsdir='var/filestorage',
                 ))
@@ -143,7 +143,7 @@ def upload_blob(config, start_when_done=True):
     with api.settings(sudo_user=user):
         with api.cd(folder):
             # Backup current blob files.
-            if exists('var/blobstorage'):
+            if exists('var/blobstorage', use_sudo=True):
                 api.sudo('mv var/blobstorage var/blobstorage_bak')
             api.sudo('mv /tmp/upload/blobstorage var')
 
