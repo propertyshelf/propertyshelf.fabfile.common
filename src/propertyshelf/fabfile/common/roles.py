@@ -17,21 +17,29 @@ def check(role, roles=None):
 
 def get_required():
     """Get a list of required roles."""
+    result = {}
+
+    role_base = api.env.get('role_base')
+    if role_base:
+        result['role_base'] = role_base
+
     role_database = api.env.get('role_database')
     role_database = role_database or missing_env('role_database')
+    result['role_database'] = role_database
+
     role_frontend = api.env.get('role_frontend')
     role_frontend = role_frontend or missing_env('role_frontend')
+    result['role_frontend'] = role_frontend
+
     role_staging = api.env.get('role_staging')
-    role_staging = role_staging or missing_env('role_staging')
+    if role_staging:
+        result['role_staging'] = role_staging
+
     role_worker = api.env.get('role_worker')
     role_worker = role_worker or missing_env('role_worker')
+    result['role_worker'] = role_worker
 
-    return {
-        'role_database': role_database,
-        'role_frontend': role_frontend,
-        'role_staging': role_staging,
-        'role_worker': role_worker,
-    }
+    return result
 
 
 def check_required():
