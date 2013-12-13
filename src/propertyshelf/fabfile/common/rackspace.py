@@ -40,6 +40,9 @@ def remove(**params):
         [node.object.name for node in Search('node', query, api=chef_api)]
     )
 
+    if not nodes:
+        api.abort('No servers found to remove.')
+
     print(red('Available nodes:'))
     print(red(', '.join(nodes)))
 
