@@ -44,8 +44,8 @@ def frontend(nodename=None, image=None, flavor=None):
     image = image or api.env.get('os_image')
     image = image or missing_env('os_image')
 
-    flavor = flavor or api.env.get('flavor_database')
-    flavor = flavor or missing_env('flavor_database')
+    flavor = flavor or api.env.get('flavor_frontend')
+    flavor = flavor or missing_env('flavor_frontend')
 
     role = api.env.get('role_frontend')
     role = role or missing_env('role_frontend')
@@ -107,8 +107,8 @@ def staging(nodename=None, image=None, flavor=None):
     image = image or api.env.get('os_image')
     image = image or missing_env('os_image')
 
-    flavor = flavor or api.env.get('flavor_database')
-    flavor = flavor or missing_env('flavor_database')
+    flavor = flavor or api.env.get('flavor_staging')
+    flavor = flavor or missing_env('flavor_staging')
 
     role = api.env.get('role_staging')
     role = role or missing_env('role_staging')
