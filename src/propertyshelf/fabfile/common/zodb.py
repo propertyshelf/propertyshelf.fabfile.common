@@ -23,11 +23,11 @@ def download_zodb(config):
                    'want to continue?'):
         api.abort('ZODB download cancelled.')
 
-    api.local('mkdir -p var/filestorage')
+    api.local('mkdir -p var_tmp/filestorage')
 
     # Backup current Data.fs.
-    if os.path.exists('var/filestorage/Data.fs'):
-        api.local('mv var/filestorage/Data.fs var/filestorage/Data.fs.bak')
+    if os.path.exists('var_tmp/filestorage/Data.fs'):
+        api.local('mv var_tmp/filestorage/Data.fs var_tmp/filestorage/Data.fs.bak')
 
     with api.settings(sudo_user=user):
 
@@ -39,7 +39,7 @@ def download_zodb(config):
         with api.cd(folder):
             api.sudo('rsync -a var/filestorage/Data.fs /tmp/Data.fs')
             api.sudo('chmod 0644 /tmp/Data.fs')
-            api.get('/tmp/Data.fs', 'var/filestorage/Data.fs')
+            api.get('/tmp/Data.fs', 'var_tmp/filestorage/Data.fs')
 
 
 def download_blobs(config):
@@ -52,12 +52,12 @@ def download_blobs(config):
         api.abort('Blob download cancelled.')
 
     # Remove local blob files backup.
-    if os.path.exists('var/blobstorage_bak'):
-        api.local('rm -rf var/blobstorage_bak')
+    if os.path.exists('var_tmp/blobstorage_bak'):
+        api.local('rm -rf var_tmp/blobstorage_bak')
 
     # Backup current blob files.
-    if os.path.exists('var/blobstorage'):
-        api.local('mv var/blobstorage var/blobstorage_bak')
+    if os.path.exists('var_tmp/blobstorage'):
+        api.local('mv var_tmp/blobstorage var_tmp/blobstorage_bak')
 
     with api.settings(sudo_user=user):
 
@@ -74,9 +74,9 @@ def download_blobs(config):
 
         with api.cd('/tmp'):
             api.sudo('tar czf blobstorage.tgz blobstorage')
-            api.get('/tmp/blobstorage.tgz', './var/blobstorage.tgz')
+            api.get('/tmp/blobstorage.tgz', './var_tmp/blobstorage.tgz')
 
-        with api.lcd('var'):
+        with api.lcd('var_tmp'):
             api.local('tar xzf blobstorage.tgz')
 
 
@@ -97,7 +97,7 @@ def upload_zodb(config):
 
     api.sudo('mkdir -p /tmp/upload', user=user)
 
-    api.put('var/filestorage/Data.fs', '/tmp/upload/Data.fs', use_sudo=True)
+    api.put('var_tmp/filestorage/Data.fs', '/tmp/upload/Data.fs', use_sudo=True)
     api.sudo('chown %s /tmp/upload/Data.fs' % user)
 
     with api.settings(sudo_user=user):
@@ -121,7 +121,7 @@ def upload_blob(config):
 
     api.sudo('mkdir -p /tmp/upload', user=user)
 
-    with api.lcd('var'):
+    with api.lcd('var_tmp'):
         api.local('tar czf blobstorage_upload.tgz blobstorage')
         api.put('blobstorage_upload.tgz', '/tmp/upload/blobstorage.tgz',
                 use_sudo=True)
