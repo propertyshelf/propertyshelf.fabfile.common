@@ -138,9 +138,15 @@ def upload_blob(config):
             api.sudo('mv /tmp/upload/blobstorage var')
 
 
-def backup():
+def backup(config):
     """Perform a backup of Zope's data on the server."""
-    raise NotImplementedError
+    folder = config.get('zeo', {}).get('dir') or err('Folder must be set!')
+    user = config.get('user') or err('Application user must be set!')
+
+    with api.settings(sudo_user=user):
+        # Do snapshot backup.
+        with api.cd(folder):
+            api.sudo('./bin/snapshotbackup')
 
 
 def restore():
